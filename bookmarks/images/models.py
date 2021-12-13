@@ -30,3 +30,9 @@ class Image(models.Model):
 
     def get_absolute_url(self):
         return reverse("images:detail", args=[self.id, self.slug])
+
+    def like(self, user):
+        self.users_like.add(user)
+
+    def unlike(self, user):
+        self.users_like.remove(user)
