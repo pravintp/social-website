@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from .forms import ImageCreateForm
 from .utils import get_images_of_current_paginator
 from .models import Image
+from actions.utils import create_action
 
 # Create your views here.
 
@@ -20,6 +21,7 @@ def image_create(request):
         form = ImageCreateForm(data=request.POST)
         if form.is_valid():
             image = form.save()
+            create_action(request.user, "bookmarked image", image)
             messages.success(request, "Image added successfully")
             return redirect(image.get_absolute_url())
     else:
@@ -44,6 +46,7 @@ def image_like_view(request):
         image = Image.objects.get(id=image_id)
         if action == "like":
             image.like(request.user)
+            create_action(request.user, "likes", image)
         else:
             image.unlike(request.user)
         return JsonResponse({"status": "ok"})
