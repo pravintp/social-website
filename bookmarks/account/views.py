@@ -4,9 +4,12 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from common.decorators import ajax_required
 
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
-from .utils import authenticate_user, add_user
+from .utils import authenticate_user, add_user, follow_or_unfollow
 
 # Create your views here.
 
@@ -92,3 +95,18 @@ def user_detail(request, username):
             "user": get_object_or_404(User, username=username, is_active=True),
         },
     )
+
+
+@ajax_required
+@require_POST
+@login_required
+def user_follow(request):
+    user_id = request.POST.get("id")
+    action = request.POST.get("action")
+    from_user = request.user
+    result = follow_or_unfollow(user_id, from_user, action)
+    if result == "success":
+        status = "ok"
+    else:
+        status = "error"
+    return JsonResponse({"status": status})
