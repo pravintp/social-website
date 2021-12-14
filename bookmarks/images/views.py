@@ -8,7 +8,7 @@ from common.decorators import ajax_required
 from django.contrib.auth.models import User
 
 from .forms import ImageCreateForm
-from .utils import get_images_of_current_paginator, get_total_views
+from .utils import get_images_of_current_paginator, get_total_views, get_most_viewed
 from .models import Image
 from actions.utils import create_action
 
@@ -68,4 +68,13 @@ def image_list(request):
         )
     return render(
         request, "images/image/list.html", {"section": "images", "images": images}
+    )
+
+
+@login_required
+def image_ranking(request):
+    return render(
+        request,
+        "images/image/ranking.html",
+        {"section": "images", "most_viewed": get_most_viewed()},
     )
