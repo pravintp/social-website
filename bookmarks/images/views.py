@@ -8,7 +8,7 @@ from common.decorators import ajax_required
 from django.contrib.auth.models import User
 
 from .forms import ImageCreateForm
-from .utils import get_images_of_current_paginator
+from .utils import get_images_of_current_paginator, get_total_views
 from .models import Image
 from actions.utils import create_action
 
@@ -31,8 +31,11 @@ def image_create(request):
 
 def image_detail(request, id, slug):
     image = get_object_or_404(Image, id=id, slug=slug)
+    total_views = get_total_views(image)
     return render(
-        request, "images/image/detail.html", {"section": "images", "image": image}
+        request,
+        "images/image/detail.html",
+        {"section": "images", "image": image, "total_views": total_views},
     )
 
 
