@@ -100,11 +100,10 @@ def user_detail(request, username):
 @ajax_required
 @require_POST
 @login_required
-def user_follow(request):
-    user_id = request.POST.get("id")
-    action = request.POST.get("action")
-    from_user = request.user
-    result = follow_or_unfollow(user_id, from_user, action)
+def follow_or_unfollow_view(request):
+    result = follow_or_unfollow(
+        request.POST.get("id"), request.user, request.POST.get("action")
+    )
     if result == "success":
         status = "ok"
     else:

@@ -20,14 +20,20 @@ def add_user(form):
 def follow_or_unfollow(user_id, from_user, action):
     status = "success"
     if user_id and action:
-        try:
-            to_user = User.objects.get(id=user_id)
+        to_user = get_user(user_id)
+        if to_user:
             if action == "follow":
                 Contact.objects.get_or_create(user_from=from_user, user_to=to_user)
             else:
                 Contact.objects.filter(user_from=from_user, user_to=to_user).delete()
-        except User.DoesNotExist:
-            status = "fail"
-    else:
-        status = "fail"
+            return status
+    status = "fail"
     return status
+
+
+def get_user(user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        user = None
+    return user
