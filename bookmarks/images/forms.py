@@ -1,7 +1,7 @@
 from django import forms
-from urllib import request
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
+from urllib.request import urlopen
 
 from .models import Image
 
@@ -32,11 +32,11 @@ class ImageCreateForm(forms.ModelForm):
             image.save()
         return image
 
-    def get_image_name(self, title, url):
+    def get_name(self, title, url):
         extension = url.rsplit(".", 1)[1].lower()
         name = f"{slugify(title)}.{extension}"
         return name
 
     def get_file(self, url):
-        response = request.urlopen(url)
+        response = urlopen(url)
         return ContentFile(response.read())
