@@ -7,6 +7,7 @@ from django.views.decorators.http import require_POST
 from common.decorators import ajax_required
 
 from .forms import ImageCreateForm
+from .utils import get_images_of_current_paginator
 from .models import Image
 
 # Create your views here.
@@ -46,3 +47,18 @@ def image_like_view(request):
             image.unlike(request.user)
         return JsonResponse({"status": "ok"})
     return JsonResponse({"status": "error"})
+
+
+@login_required
+def image_list(request):
+    page = request.GET.get("page")
+    images = get_images_of_current_paginator(page)
+    if request.is_ajax():
+        return render(
+            request,
+            "images/image/list_ajax.html",
+            {"section": "images", "images": images},
+        )
+    return render(
+        request, "images/image/list.html", {"section": "images", "images": images}
+    )
