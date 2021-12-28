@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from common.decorators import ajax_required
+from django.contrib.auth.models import User
 
 from .forms import ImageCreateForm
 from .utils import get_images_of_current_paginator
@@ -61,4 +62,25 @@ def image_list(request):
         )
     return render(
         request, "images/image/list.html", {"section": "images", "images": images}
+    )
+
+
+@login_required
+def user_list(request):
+    return render(
+        request,
+        "account/user/list.html",
+        {"section": "people", "users": User.objects.filter(is_active=True)},
+    )
+
+
+@login_required
+def user_detail(request, username):
+    return render(
+        request,
+        "account/user/detail.html",
+        {
+            "section": "people",
+            "user": get_object_or_404(User, username=username, is_active=True),
+        },
     )
