@@ -7,9 +7,12 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from common.decorators import ajax_required
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
-from .utils import authenticate_user, add_user, follow_or_unfollow
+from .models import Contact
+from .utils import authenticate_user, add_user
 
 # Create your views here.
 
@@ -101,11 +104,13 @@ def user_detail(request, username):
 @require_POST
 @login_required
 def follow_or_unfollow_view(request):
-    result = follow_or_unfollow(
-        request.POST.get("id"), request.user, request.POST.get("action")
-    )
-    if result == "success":
-        status = "ok"
+    user_to_be_followed = get_object_or_404(User, pk=request.POST.get("id"))
+    if request.POST.get("action") == "follow":
+        Contact.objects.get_or_create(
+            user_from=request.user, user_to=user_to_be_followed
+        )
     else:
-        status = "error"
-    return JsonResponse({"status": status})
+        Contact.objects.filter(
+            user_from=request.user, user_to=user_to_be_followed
+        ).delete()
+    return JsonResponse({"status": "success"})
