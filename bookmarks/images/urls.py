@@ -7,8 +7,6 @@ app_name = "images"
 urlpatterns = [
     path("create/", views.image_create, name="create"),
     path("detail/<int:id>/<slug:slug>/", views.image_detail, name="detail"),
-    path("like/", views.image_like, name="like"),
+    path("like/", views.image_like_view, name="like"),
     path("", views.image_list, name="list"),
-    path("users/", views.user_list, name="user_list"),
-    path("users/<username>/", views.user_detail, name="user_detail"),
 ]

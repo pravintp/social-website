@@ -63,24 +63,3 @@ def image_list(request):
     return render(
         request, "images/image/list.html", {"section": "images", "images": images}
     )
-
-
-@login_required
-def user_list(request):
-    return render(
-        request,
-        "account/user/list.html",
-        {"section": "people", "users": User.objects.filter(is_active=True)},
-    )
-
-
-@login_required
-def user_detail(request, username):
-    return render(
-        request,
-        "account/user/detail.html",
-        {
-            "section": "people",
-            "user": get_object_or_404(User, username=username, is_active=True),
-        },
-    )
