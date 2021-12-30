@@ -23,4 +23,12 @@ def get_images_of_current_paginator(page):
 
 
 def get_total_views(image):
+    redis_connector.zincrby("image_ranking", 1, image.id)
     return redis_connector.incr(f"image:{image.id}:views")
+
+
+def get_most_viewed():
+    image_ranking = redis_connector.zrange("image_ranking", 0, -1, desc=True)[:10]
+    image_ranking_ids = [int(id) for id in image_ranking]
+    most_viewed = list(Image.objects.filter(id__in=image_ranking_ids))
+    return most_viewed.sort(key=lambda x: image_ranking_ids.index(x.id))
