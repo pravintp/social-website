@@ -12,8 +12,8 @@ from django.contrib.auth.models import User
 
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
 from .models import Contact
-from .utils import authenticate_user, add_user
-
+from .utils import authenticate_user, add_user, get_actions
+from actions.utils import create_action
 # Create your views here.
 
 
@@ -35,7 +35,11 @@ def user_login(request):
 
 @login_required
 def dashboard(request):
-    return render(request, "account/dashboard.html", {"section": "dashboard"})
+    return render(
+        request,
+        "account/dashboard.html",
+        {"section": "dashboard", "actions": get_actions(request.user)},
+    )
 
 
 def register(request):
@@ -109,6 +113,7 @@ def follow_or_unfollow_view(request):
         Contact.objects.get_or_create(
             user_from=request.user, user_to=user_to_be_followed
         )
+        create_action(request.user, "is following", user_to_be_followed)
     else:
         Contact.objects.filter(
             user_from=request.user, user_to=user_to_be_followed
